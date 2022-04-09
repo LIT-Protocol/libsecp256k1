@@ -458,6 +458,59 @@ impl Default for SecretKey {
     }
 }
 
+impl serde::Serialize for SecretKey {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        if serializer.is_human_readable() {
+            serializer.serialize_str(&base64::encode(&self.serialize()[..]))
+        } else {
+            serializer.serialize_bytes(&self.serialize())
+        }
+    }
+}
+
+struct SecretKeyVisitor;
+
+impl<'de> de::Visitor<'de> for SecretKeyVisitor {
+    type Value = SecretKey;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter
+            .write_str("a bytestring of either 33 (compressed), 64 (raw), or 65 bytes in length")
+    }
+
+    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        let value: &[u8] = &base64::decode(value).unwrap();
+        // let key_format = match value.len() {
+        //     33 => PublicKeyFormat::Compressed,
+        //     64 => PublicKeyFormat::Raw,
+        //     65 => PublicKeyFormat::Full,
+        //     _ => return Err(E::custom(Error::InvalidInputLength)),
+        // };
+        // SecretKey::parse_slice(value, Some(key_format))
+        // .map_err(|_e| E::custom(Error::InvalidPublicKey))
+        SecretKey::parse_slice(value).map_err(|_e| E::custom(Error::InvalidSecretKey))
+    }
+}
+
+impl<'de> Deserialize<'de> for SecretKey {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: de::Deserializer<'de>,
+    {
+        if deserializer.is_human_readable() {
+            deserializer.deserialize_str(SecretKeyVisitor)
+        } else {
+            deserializer.deserialize_bytes(SecretKeyVisitor)
+        }
+    }
+}
+
 impl Into<Scalar> for SecretKey {
     fn into(self) -> Scalar {
         self.0
