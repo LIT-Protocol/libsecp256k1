@@ -492,21 +492,22 @@ impl serde::Serialize for SecretKey {
     }
 }
 
-struct SecretKeyVisitor;
+struct SecretKeyStrVisitor;
 
-impl<'de> de::Visitor<'de> for SecretKeyVisitor {
+impl<'de> de::Visitor<'de> for SecretKeyStrVisitor {
     type Value = SecretKey;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         formatter
-            .write_str("a bytestring of either 33 (compressed), 64 (raw), or 65 bytes in length")
+            .write_str("a bytestring of 32 bytes in length")
     }
 
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
     where
         E: de::Error,
     {
-        let value: &[u8] = &base64::decode(value).unwrap();
+        let value: &[u8] = &base64::decode(value).map_err(|e| E::custom(e))?;
+        println!("value len: {:?}", value.len());
         // let key_format = match value.len() {
         //     33 => PublicKeyFormat::Compressed,
         //     64 => PublicKeyFormat::Raw,
@@ -519,15 +520,33 @@ impl<'de> de::Visitor<'de> for SecretKeyVisitor {
     }
 }
 
+struct SecretKeyBytesVisitor;
+
+impl<'de> de::Visitor<'de> for SecretKeyBytesVisitor {
+    type Value = SecretKey;
+
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter
+            .write_str("a bytestring of 32 bytes in length")
+    }
+
+    fn visit_bytes<E>(self, value: &[u8]) -> Result<Self::Value, E>
+    where
+        E: de::Error,
+    {
+        SecretKey::parse_slice(value).map_err(|_e| E::custom(Error::InvalidSecretKey))
+    }
+}
+
 impl<'de> Deserialize<'de> for SecretKey {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: de::Deserializer<'de>,
     {
         if deserializer.is_human_readable() {
-            deserializer.deserialize_str(SecretKeyVisitor)
+            deserializer.deserialize_str(SecretKeyStrVisitor)
         } else {
-            deserializer.deserialize_bytes(SecretKeyVisitor)
+            deserializer.deserialize_bytes(SecretKeyBytesVisitor)
         }
     }
 }
