@@ -31,7 +31,7 @@ jobs:
     steps:
 
       - name:          Cancel Previous Runs
-        uses:          styfle/cancel-workflow-action@0.9.1
+        uses:          styfle/cancel-workflow-action@bb6001c4ea612bf59c3abfc4756fbceee4f870c7 # 0.10.0
 
       - name:          Set default compiler
         if:            matrix.compiler == 'clang'
@@ -40,7 +40,7 @@ jobs:
           echo "CXX=clang++" >> "$GITHUB_ENV"
 
       - name:          Checkout sources & submodules
-        uses:          actions/checkout@v2.3.4
+        uses:          actions/checkout@v3.0.2
         with:
           fetch-depth: 5
           submodules:  recursive
@@ -54,10 +54,10 @@ jobs:
           components:  clippy, rustfmt
           override:    true
 
-      - uses:          Swatinem/rust-cache@v1.3.0
+      - uses:          Swatinem/rust-cache@6720f05bc48b77f96918929a9019fb2203ff71f8 # v2.0.0
 
       - name:          Cache sccache
-        uses:          actions/cache@v2.1.6
+        uses:          actions/cache@v3.0.8
         with:
           path:        "$HOME/sccache"
           key:         sccache-${{ env['cache_hash'] }}
@@ -101,7 +101,7 @@ jobs:
     steps:
 
       - name:          Cancel Previous Runs
-        uses:          styfle/cancel-workflow-action@0.9.1
+        uses:          styfle/cancel-workflow-action@bb6001c4ea612bf59c3abfc4756fbceee4f870c7 # 0.10.0
 
       - name:          Set default compiler
         if:            matrix.compiler == 'clang'
@@ -110,7 +110,7 @@ jobs:
           echo "CXX=clang++" >> "$GITHUB_ENV"
 
       - name:          Checkout sources & submodules
-        uses:          actions/checkout@v2.3.4
+        uses:          actions/checkout@v3.0.2
         with:
           fetch-depth: 5
           submodules:  recursive
@@ -124,10 +124,10 @@ jobs:
           components:  clippy, rustfmt
           override:    true
 
-      - uses:          Swatinem/rust-cache@v1.3.0
+      - uses:          Swatinem/rust-cache@6720f05bc48b77f96918929a9019fb2203ff71f8 # v2.0.0
 
       - name:          Cache sccache
-        uses:          actions/cache@v2.1.6
+        uses:          actions/cache@v3.0.8
         with:
           path:        "$HOME/sccache"
           key:         sccache-${{ env['cache_hash'] }}
@@ -182,7 +182,7 @@ jobs:
     steps:
 
       - name:          Cancel Previous Runs
-        uses:          styfle/cancel-workflow-action@0.9.1
+        uses:          styfle/cancel-workflow-action@bb6001c4ea612bf59c3abfc4756fbceee4f870c7 # 0.10.0
 
       - name:          Set default compiler
         if:            matrix.compiler == 'clang'
@@ -191,7 +191,7 @@ jobs:
           echo "CXX=clang++" >> "$GITHUB_ENV"
 
       - name:          Checkout sources & submodules
-        uses:          actions/checkout@v2.3.4
+        uses:          actions/checkout@v3.0.2
         with:
           fetch-depth: 5
           submodules:  recursive
@@ -205,10 +205,10 @@ jobs:
           components:  clippy, rustfmt
           override:    true
 
-      - uses:          Swatinem/rust-cache@v1.3.0
+      - uses:          Swatinem/rust-cache@6720f05bc48b77f96918929a9019fb2203ff71f8 # v2.0.0
 
       - name:          Cache sccache
-        uses:          actions/cache@v2.1.6
+        uses:          actions/cache@v3.0.8
         with:
           path:        "$HOME/sccache"
           key:         sccache-${{ env['cache_hash'] }}
@@ -265,7 +265,7 @@ jobs:
         shell:         bash
 
       - name:          Upload artifacts
-        uses:          actions/upload-artifact@v2.2.4
+        uses:          actions/upload-artifact@v3.1.0
         with:
           name:        ${{ matrix.platform }}.${{ matrix.toolchain }}.${{ matrix.compiler }}.zip
           path:        artifacts/
