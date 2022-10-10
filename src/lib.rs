@@ -498,8 +498,7 @@ impl<'de> de::Visitor<'de> for SecretKeyStrVisitor {
     type Value = SecretKey;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter
-            .write_str("a bytestring 32 bytes in length")
+        formatter.write_str("a bytestring 32 bytes in length")
     }
 
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
@@ -525,8 +524,7 @@ impl<'de> de::Visitor<'de> for SecretKeyBytesVisitor {
     type Value = SecretKey;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        formatter
-            .write_str("a byte slice 32 bytes in length")
+        formatter.write_str("a byte slice 32 bytes in length")
     }
 
     fn visit_bytes<E>(self, value: &[u8]) -> Result<Self::Value, E>
